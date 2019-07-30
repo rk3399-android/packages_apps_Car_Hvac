@@ -42,6 +42,7 @@ public class FanDirectionButtonsController {
     private void initialize() {
         // Note Car specific values are being used here, as not all cars have the floor
         // and defroster fan direction.
+        mHvacController.registerCallback(mCallback);
         mFanDirectionMap.put(FanDirectionButtons.FAN_DIRECTION_FACE,
                 CarHvacManager.FAN_POSITION_FACE);
         mFanDirectionMap.put(FanDirectionButtons.FAN_DIRECTION_FACE_FLOOR,
@@ -52,7 +53,13 @@ public class FanDirectionButtonsController {
                 CarHvacManager.FAN_POSITION_DEFROST_AND_FLOOR);
         mFanDirectionButtons.setFanDirectionClickListener(mListener);
     }
-
+    
+   private final HvacController.Callback mCallback = new HvacController.Callback() {
+		public void onFanDirectionChange(int direction){
+			mFanDirectionButtons.setFanPosition(direction);
+		}	
+	};
+	
     private final FanDirectionButtons.FanDirectionClickListener mListener
             = new FanDirectionButtons.FanDirectionClickListener() {
         @Override

@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.android.car.hvac.R;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,8 @@ import java.util.Map;
  * turn off the other states.
  */
 public class FanDirectionButtons extends LinearLayout {
+	private static final String TAG = "FanDirection";
+	
     public static final int FAN_DIRECTION_FACE = 0;
     public static final int FAN_DIRECTION_FACE_FLOOR = 1;
     public static final int FAN_DIRECTION_FLOOR = 2;
@@ -53,6 +56,11 @@ public class FanDirectionButtons extends LinearLayout {
     private static final float UNSELECTED_BUTTON_ALPHA = 0.5f;
     private static final float SELECTED_BUTTON_ALPHA = 1.0f;
 
+	private ImageView directionButton1;
+	private ImageView directionButton2;
+	private ImageView directionButton3;
+	private ImageView directionButton4;
+	
     private final Map<ImageView, Pair<Drawable, Drawable>> mFanMap = new HashMap<>();
     private final Map<ImageView, Integer> mControlMap = new HashMap<>();
 
@@ -88,10 +96,10 @@ public class FanDirectionButtons extends LinearLayout {
 
         setOrientation(HORIZONTAL);
 
-        ImageView directionButton1 = (ImageView) findViewById(R.id.direction_1);
-        ImageView directionButton2 = (ImageView) findViewById(R.id.direction_2);
-        ImageView directionButton3 = (ImageView) findViewById(R.id.direction_3);
-        ImageView directionButton4 = (ImageView) findViewById(R.id.direction_4);
+		directionButton1 = (ImageView) findViewById(R.id.direction_1);
+        directionButton2 = (ImageView) findViewById(R.id.direction_2);
+        directionButton3 = (ImageView) findViewById(R.id.direction_3);
+        directionButton4 = (ImageView) findViewById(R.id.direction_4);
 
         Drawable directionOn1 = res.getDrawable(R.drawable.ic_fan_direction_1_on);
         Drawable directionOn2 = res.getDrawable(R.drawable.ic_fan_direction_2_on);
@@ -117,6 +125,53 @@ public class FanDirectionButtons extends LinearLayout {
             v.setOnClickListener(mFanDirectionClickListener);
         }
     }
+    
+    public void setFanPosition(int direction){	
+		switch(direction){
+			case FAN_DIRECTION_FACE:
+				directionButton1.setImageDrawable(mFanMap.get(directionButton1).first);
+				directionButton1.setAlpha(SELECTED_BUTTON_ALPHA);
+				directionButton2.setImageDrawable(mFanMap.get(directionButton2).second);
+				directionButton2.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton3.setImageDrawable(mFanMap.get(directionButton3).second);
+				directionButton3.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton4.setImageDrawable(mFanMap.get(directionButton4).second);
+				directionButton4.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				break;
+			case FAN_DIRECTION_FACE_FLOOR:
+				directionButton1.setImageDrawable(mFanMap.get(directionButton1).second);
+				directionButton1.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton2.setImageDrawable(mFanMap.get(directionButton2).first);
+				directionButton2.setAlpha(SELECTED_BUTTON_ALPHA);
+				directionButton3.setImageDrawable(mFanMap.get(directionButton3).second);
+				directionButton3.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton4.setImageDrawable(mFanMap.get(directionButton4).second);
+				directionButton4.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				break;
+			case FAN_DIRECTION_FLOOR:
+				directionButton1.setImageDrawable(mFanMap.get(directionButton1).second);
+				directionButton1.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton2.setImageDrawable(mFanMap.get(directionButton2).second);
+				directionButton2.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton3.setImageDrawable(mFanMap.get(directionButton3).first);
+				directionButton3.setAlpha(SELECTED_BUTTON_ALPHA);
+				directionButton4.setImageDrawable(mFanMap.get(directionButton4).second);
+				directionButton4.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				break;
+			case FAN_DIRECTION_FLOOR_DEFROSTER:
+				directionButton1.setImageDrawable(mFanMap.get(directionButton1).second);
+				directionButton1.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton2.setImageDrawable(mFanMap.get(directionButton2).second);
+				directionButton2.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton3.setImageDrawable(mFanMap.get(directionButton3).second);
+				directionButton3.setAlpha(UNSELECTED_BUTTON_ALPHA);
+				directionButton4.setImageDrawable(mFanMap.get(directionButton4).first);
+				directionButton4.setAlpha(SELECTED_BUTTON_ALPHA);
+				break;
+			default:
+				resetFanToOff();
+		}
+	}	
 
     private final OnClickListener mFanDirectionClickListener = new OnClickListener() {
         @Override

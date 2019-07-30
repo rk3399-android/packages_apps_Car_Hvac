@@ -20,6 +20,7 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.util.SparseLongArray;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.GuardedBy;
@@ -31,6 +32,7 @@ import javax.annotation.concurrent.GuardedBy;
  * them, keeping the application's view of the world sane.
  */
 public class DataStore {
+	private static final String TAG = "DataStore";
     private static final long COALESCE_TIME_MS = TimeUnit.SECONDS.toMillis(2);
 
     @GuardedBy("mTemperature")
@@ -235,12 +237,14 @@ public class DataStore {
     }
 
     public boolean getAutoModeState() {
+		Log.e(TAG, "getAutoMode.");
         synchronized (mAutoModeState) {
             return mAutoModeState;
         }
     }
 
     public void setAutoModeState(boolean autoModeState) {
+		Log.e(TAG, "setAutoMode.");
         synchronized (mAutoModeState) {
             mAutoModeState = autoModeState;
             mAutoModeLastSet = SystemClock.uptimeMillis();

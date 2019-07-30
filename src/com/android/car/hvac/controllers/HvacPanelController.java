@@ -39,11 +39,13 @@ import com.android.car.hvac.ui.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 /**
  * A state machine to control transition from various HVAC UI layouts.
  */
 public class HvacPanelController {
+	private static final String TAG = "HvacPanelController";
     private static final int PANEL_ANIMATION_TIME_MS = 200;
     private static final int PANEL_COLLAPSE_ANIMATION_TIME_MS = 500;
 
@@ -120,7 +122,7 @@ public class HvacPanelController {
             WindowManager windowManager, TemperatureBarOverlay driverTemperature,
             TemperatureBarOverlay passengerTemperature, ViewGroup driverTemperatureBarTouchOverlay,
             ViewGroup passengerTemperatureBarTouchOverlay) {
-
+		
         mCurrentState = STATE_COLLAPSED;
         mWindowManager = windowManager;
 
@@ -194,12 +196,12 @@ public class HvacPanelController {
     }
 
     public void updateHvacController(HvacController controller) {
+		Log.e(TAG, "updateHvacController.");
         //TODO: handle disconnected HvacController.
         mHvacController = controller;
 
         mFanSpeedBarController = new FanSpeedBarController(mFanSpeedBar, mHvacController);
-        mFanDirectionButtonsController
-                = new FanDirectionButtonsController(mFanDirectionButtons, mHvacController);
+        mFanDirectionButtonsController = new FanDirectionButtonsController(mFanDirectionButtons, mHvacController);
         mTemperatureController = new TemperatureController(mPassengerTemperature,
                 mDriverTemperature, mHvacController);
         mSeatWarmerController = new SeatWarmerController(mPassengerSeatWarmer,
@@ -269,6 +271,7 @@ public class HvacPanelController {
 
         @Override
         public void onAutoModeChange(boolean isOn) {
+			Log.e(TAG, "panel onautoModechange");
             mAutoMode = isOn;
             setAutoMode(mAutoMode);
         }

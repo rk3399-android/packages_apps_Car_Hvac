@@ -46,9 +46,11 @@ public class HvacController extends Service {
     private static final int PASSENGER_ZONE_ID = VehicleSeat.SEAT_ROW_1_RIGHT;
 
     public static final int[] AIRFLOW_STATES = new int[]{
-            CarHvacManager.FAN_POSITION_FACE,
+			CarHvacManager.FAN_POSITION_FACE,
+            CarHvacManager.FAN_POSITION_FACE_AND_FLOOR,
             CarHvacManager.FAN_POSITION_FLOOR,
-            CarHvacManager.FAN_POSITION_FACE_AND_FLOOR
+			CarHvacManager.FAN_POSITION_DEFROST_AND_FLOOR
+            
     };
 
     /**
@@ -113,6 +115,7 @@ public class HvacController extends Service {
 
     @Override
     public void onCreate() {
+		 Log.d(TAG, "onCreate");
         super.onCreate();
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
             if (SystemProperties.getBoolean(DEMO_MODE_PROPERTY, false)) {
@@ -148,6 +151,7 @@ public class HvacController extends Service {
     }
 
     public void registerCallback(Callback callback) {
+		Log.d(TAG, "size Callback"+mCallbacks.size());
         synchronized (mCallbacks) {
             mCallbacks.add(callback);
         }
@@ -177,6 +181,7 @@ public class HvacController extends Service {
                 @Override
                 public void onConnected(Car car) {
                     synchronized (mHvacManagerReady) {
+						Log.d(TAG, "Connected to Car Service");
                         try {
                             initHvacManager((CarHvacManager) mCarApiClient.getCarManager(
                                     android.car.Car.HVAC_SERVICE));
@@ -292,6 +297,7 @@ public class HvacController extends Service {
     }
 
     private void handleAutoModeUpdate(boolean autoModeState) {
+		Log.e(TAG, "handleauto");
         boolean shouldPropagate = mDataStore.shouldPropagateAutoModeUpdate(autoModeState);
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "AutoMode Update, id: " + autoModeState +
@@ -299,8 +305,10 @@ public class HvacController extends Service {
         }
         if (shouldPropagate) {
             synchronized (mCallbacks) {
+				Log.d(TAG, "Callback"+mCallbacks.size());
                 for (int i = 0; i < mCallbacks.size(); i++) {
                     mCallbacks.get(i).onAutoModeChange(autoModeState);
+                    Log.d(TAG, "get Callback"+mCallbacks.get(i));
                 }
             }
         }
@@ -331,7 +339,7 @@ public class HvacController extends Service {
         if (shouldPropagate) {
             synchronized (mCallbacks) {
                 for (int i = 0; i < mCallbacks.size(); i++) {
-                    mCallbacks.get(i).onFanDirectionChange(position);
+                    mCallbacks.get(i).onFanDirectionChange(index);
                 }
             }
         }
@@ -355,9 +363,10 @@ public class HvacController extends Service {
     private void handleTempUpdate(int zone, float temp) {
         boolean shouldPropagate = mDataStore.shouldPropagateTempUpdate(zone, temp);
         if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Temp Update, zone: " + zone + " temp: " + temp +
-                    " should propagate: " + shouldPropagate);
+            
         }
+        Log.d(TAG, "Temp Update, zone: " + zone + " temp: " + temp +
+                    " should propagate: " + shouldPropagate);
         if (shouldPropagate) {
             int userTemperature =  mPolicy.hardwareToUserTemp(temp);
             synchronized (mCallbacks) {
@@ -394,6 +403,7 @@ public class HvacController extends Service {
     }
 
     public void requestRefresh(final Runnable r, final Handler h) {
+		Log.e(TAG, "requestRefresh");
         final AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... unused) {
@@ -722,10 +732,12 @@ public class HvacController extends Service {
     }
 
     public boolean getAutoModeState() {
+		Log.e(TAG, "Controller getAuto");
         return mDataStore.getAutoModeState();
     }
 
     public void setAutoMode(final boolean state) {
+		Log.e(TAG, "Controller setAuto");
         mDataStore.setAutoModeState(state);
         final AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             protected Void doInBackground(Void... unused) {
